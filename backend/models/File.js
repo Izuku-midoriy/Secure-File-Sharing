@@ -12,7 +12,13 @@ const fileSchema = new Schema({
         type: String,
         required: true
     },
-    filePath: {
+    cloudinaryUrl: {
+        type: String
+    },
+    cloudinaryPublicId: {
+        type: String
+    },
+    filePath: { // Kept for backward compatibility with older uploads
         type: String
     },
     encryptedData: {
@@ -104,6 +110,15 @@ const fileSchema = new Schema({
 
 // Middleware to automatically delete the physical file when a document is deleted
 fileSchema.post('findOneAndDelete', async function(doc) {
+    if (doc && doc.cloudinaryPublicId) {
+        const cloudinary = require('cloudinary').v2;
+        try {
+            await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: 'raw' });
+            console.log(`[File Cleanup] Deleted file from Cloudinary: ${doc.cloudinaryPublicId}`);
+        } catch (error) {
+            console.error(`[File Cleanup] Error deleting from Cloudinary: ${error.message}`);
+        }
+    }
     if (doc && doc.filePath) {
         const fs = require('fs');
         try {
@@ -118,6 +133,15 @@ fileSchema.post('findOneAndDelete', async function(doc) {
 });
 
 fileSchema.post('deleteOne', { document: true, query: false }, async function(doc) {
+    if (doc && doc.cloudinaryPublicId) {
+        const cloudinary = require('cloudinary').v2;
+        try {
+            await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: 'raw' });
+            console.log(`[File Cleanup] Deleted file from Cloudinary: ${doc.cloudinaryPublicId}`);
+        } catch (error) {
+            console.error(`[File Cleanup] Error deleting from Cloudinary: ${error.message}`);
+        }
+    }
     if (doc && doc.filePath) {
         const fs = require('fs');
         try {

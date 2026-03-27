@@ -8,19 +8,21 @@ const File = require('../models/File');
 const User = require('../models/User');
 const { hashPassword, comparePassword } = require('../utils/auth');
 
-// Configure multer to use disk storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const userDir = path.join('uploads', String(req.user._id));
-        if (!fs.existsSync(userDir)) {
-            fs.mkdirSync(userDir, { recursive: true });
-        }
-        cb(null, userDir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, String(req.user._id) + '_' + Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_'))
-    }
-});
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
+const axios = require('axios');
+
+// Configure Cloudinary explicitly if URL not used
+if (!process.env.CLOUDINARY_URL && process.env.CLOUDINARY_CLOUD_NAME) {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+}
+
+// Configure multer to use memory storage
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage: storage,
@@ -81,14 +83,31 @@ exports.uploadFile = async (req, res) => {
             }
 
             try {
-                // Encrypt the file using streams to disk
-                const encryptedFilePath = await encryptFile(req.file.path);
+                // Encrypt the file buffer in memory
+                const encryptedBuffer = encryptBuffer(req.file.buffer);
+
+                // Upload to Cloudinary using streamifier (chunked for large files > 10MB)
+                const uploadToCloudinary = () => {
+                    return new Promise((resolve, reject) => {
+                        const cld_upload_stream = cloudinary.uploader.upload_chunked_stream(
+                            { resource_type: 'raw', folder: 'secure-file-share' },
+                            (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            }
+                        );
+                        streamifier.createReadStream(encryptedBuffer).pipe(cld_upload_stream);
+                    });
+                };
+
+                const cloudinaryResult = await uploadToCloudinary();
 
                 // Save file metadata to MongoDB with user ownership
                 const fileDoc = new File({
-                    filename: req.file.filename,
+                    filename: req.file.originalname,
                     originalName: `${req.user.username}_${req.file.originalname}`,
-                    filePath: encryptedFilePath,
+                    cloudinaryUrl: cloudinaryResult.secure_url,
+                    cloudinaryPublicId: cloudinaryResult.public_id,
                     size: req.file.size,
                     mimeType: req.file.mimetype,
                     uploadedBy: req.user._id
@@ -102,10 +121,10 @@ exports.uploadFile = async (req, res) => {
                 });
 
                 res.status(201).json({
-                    message: 'File uploaded and encrypted successfully',
+                    message: 'File uploaded, encrypted, and synced to cloud successfully',
                     fileId: fileDoc._id,
                     originalName: req.file.originalname,
-                    storedIn: 'mongodb'
+                    storedIn: 'cloudinary'
                 });
             } catch (encryptError) {
                 console.error('Encryption error:', encryptError);
@@ -363,7 +382,19 @@ exports.downloadByTemporaryLink = async (req, res) => {
         res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(file.originalName)}"`);
 
         // Stream decrypted file data
-        if (file.filePath) {
+        if (file.cloudinaryUrl) {
+            try {
+                // Fetch the encrypted buffer from Cloudinary using Axios
+                const cloudinaryRes = await axios.get(file.cloudinaryUrl, { responseType: 'arraybuffer' });
+                const decryptedBuffer = decryptBuffer(Buffer.from(cloudinaryRes.data));
+                
+                res.setHeader('Content-Length', decryptedBuffer.length);
+                res.send(decryptedBuffer);
+            } catch (err) {
+                console.error('Cloudinary fetch error:', err);
+                return res.status(500).json({ error: 'Failed to retrieve file from cloud storage' });
+            }
+        } else if (file.filePath) { // Legacy local files
             await decryptFile(file.filePath, res);
         } else if (file.encryptedData) {
             const decryptedBuffer = decryptBuffer(file.encryptedData);
@@ -445,7 +476,19 @@ exports.downloadFileByToken = async (req, res) => {
         await file.save();
 
         // Stream decrypted file data
-        if (file.filePath) {
+        if (file.cloudinaryUrl) {
+            try {
+                // Fetch the encrypted buffer from Cloudinary using Axios
+                const cloudinaryRes = await axios.get(file.cloudinaryUrl, { responseType: 'arraybuffer' });
+                const decryptedBuffer = decryptBuffer(Buffer.from(cloudinaryRes.data));
+                
+                res.setHeader('Content-Length', decryptedBuffer.length);
+                res.send(decryptedBuffer);
+            } catch (err) {
+                console.error('Cloudinary fetch error:', err);
+                return res.status(500).json({ error: 'Failed to retrieve file from cloud storage' });
+            }
+        } else if (file.filePath) { // Legacy local files
             await decryptFile(file.filePath, res);
         } else if (file.encryptedData) {
             const decryptedBuffer = decryptBuffer(file.encryptedData);
