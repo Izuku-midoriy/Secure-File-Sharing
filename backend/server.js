@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://192.168.169.1:3001'],
+    origin: true, // Automatically allows Vercel and local origins
     credentials: true
 }));
 
