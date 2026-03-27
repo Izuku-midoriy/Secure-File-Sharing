@@ -24,6 +24,7 @@ function App() {
 
     const addTerminalLine = useCallback((text, type = 'success') => {
         setTerminalOutput(prev => [...prev, { text, type, timestamp: new Date().toLocaleTimeString() }]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchFiles = useCallback(async (silent = false) => {
