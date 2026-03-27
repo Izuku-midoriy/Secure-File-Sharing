@@ -1,0 +1,141 @@
+/* Share component styles */
+
+.share-container {
+    margin-top: 20px;
+}
+
+.share-terminal {
+    background: rgba(0, 255, 0, 0.05);
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.share-type-selector {
+    margin-bottom: 20px;
+}
+
+.share-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.terminal-button.active {
+    background: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.file-selector {
+    margin-bottom: 20px;
+}
+
+.terminal-select {
+    background: transparent;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    border-radius: 3px;
+    outline: none;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.terminal-select:focus {
+    border-color: #00ccff;
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+}
+
+.terminal-select option {
+    background: #000000;
+    color: #00ff00;
+}
+
+.user-share,
+.link-share {
+    margin-top: 20px;
+}
+
+.terminal-input {
+    background: transparent;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    border-radius: 3px;
+    outline: none;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.terminal-input:focus {
+    border-color: #00ccff;
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+}
+
+.link-settings {
+    background: rgba(0, 255, 0, 0.02);
+    border: 1px solid #00cc00;
+    border-radius: 3px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.setting-item {
+    margin-bottom: 15px;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-item label {
+    display: block;
+    color: #00ff00;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.help-text {
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(0, 255, 0, 0.05);
+    border-left: 3px solid #00ff00;
+}
+
+.help-text div {
+    color: #00cc00;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.help-text div:last-child {
+    margin-bottom: 0;
+}
+
+.link-result {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.link-details {
+    margin-top: 10px;
+}
+
+.link-url {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.link-url input {
+    flex: 1;
+}
