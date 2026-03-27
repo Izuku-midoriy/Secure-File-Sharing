@@ -96,6 +96,7 @@ function App() {
         }, 10000);
 
         return () => clearInterval(pollInterval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadingComplete, isAuthenticated]); // Intentionally omitting functions to prevent re-triggering welcome message
 
     useEffect(() => {
