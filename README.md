@@ -94,3 +94,5 @@ cd frontend && npm start
 1. **MongoDB Connection Error**: Ensure MongoDB is running on localhost:27017
 2. **Port Already in Use**: Change PORT in .env file (backend) or use different port for frontend
 3. **CORS Issues**: Backend is configured to allow frontend on localhost:3000
+
+# Secure-File-Sharing
