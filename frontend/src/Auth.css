@@ -158,6 +158,52 @@
 }
 
 /* Responsive design */
+
+/* Small phones (< 480px) */
+@media (max-width: 480px) {
+    .auth-container {
+        align-items: flex-start;
+        padding: 16px 0;
+    }
+
+    .auth-window {
+        margin: 10px;
+        padding: 24px 16px;
+        min-width: unset;
+        width: calc(100% - 20px);
+        border-radius: 6px;
+    }
+
+    .auth-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .auth-subtitle {
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+    }
+
+    .auth-input {
+        padding: 14px 10px;
+        font-size: 16px; /* prevents iOS zoom-in */
+    }
+
+    .auth-button {
+        padding: 14px;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        /* Larger tap target */
+        min-height: 48px;
+    }
+
+    .toggle-button {
+        width: 100%;
+        padding: 12px;
+        min-height: 42px;
+    }
+}
+
+/* Tablets (481px – 768px) */
 @media (max-width: 768px) {
     .auth-window {
         margin: 20px;
@@ -165,12 +211,17 @@
         min-width: auto;
         width: 90%;
     }
-    
+
     .auth-header h2 {
         font-size: 1.5rem;
     }
-    
+
     .auth-subtitle {
         font-size: 0.8rem;
     }
+
+    .auth-input {
+        font-size: 16px; /* prevents iOS zoom-in */
+    }
 }
+

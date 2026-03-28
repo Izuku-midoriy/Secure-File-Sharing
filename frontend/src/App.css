@@ -305,24 +305,145 @@ html, body {
     background: #00cc00;
 }
 
-/* Responsive Design */
+/* ===================== Mobile-First Responsive Design ===================== */
+
+/* Viewport meta safety: ensure box model includes padding */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Small phones (< 480px) */
+@media (max-width: 480px) {
+    .App {
+        padding: 8px;
+    }
+
+    .App-header {
+        padding: 12px 10px;
+    }
+
+    .App-header h1 {
+        font-size: 1.2em;
+        word-break: break-word;
+    }
+
+    .App-header p {
+        font-size: 0.78em;
+    }
+
+    .terminal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .terminal-window {
+        padding: 12px;
+        min-height: 350px;
+    }
+
+    .terminal-output {
+        font-size: 0.82em;
+        max-height: 200px;
+    }
+
+    .command-input-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .command-input {
+        width: 100%;
+        font-size: 0.9em;
+    }
+
+    /* File items stack vertically */
+    .file-item-terminal {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .file-actions-terminal {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .terminal-button {
+        font-size: 0.78em;
+        padding: 6px 10px;
+        /* Prevent tiny tap targets */
+        min-height: 36px;
+    }
+
+    .upload-area-terminal {
+        padding: 20px 12px;
+    }
+
+    .logout-button {
+        font-size: 0.72em;
+        padding: 4px 10px;
+    }
+}
+
+/* Tablets and larger phones (481px – 768px) */
 @media (max-width: 768px) {
     .App {
         padding: 10px;
     }
-    
+
+    .App-header h1 {
+        font-size: 1.5em;
+    }
+
+    .terminal-window {
+        padding: 15px;
+    }
+
+    .terminal-header {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .terminal-output {
+        max-height: 240px;
+    }
+
+    .command-input {
+        width: 100%;
+    }
+
     .file-item-terminal {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
-    
+
     .file-actions-terminal {
         width: 100%;
+        flex-wrap: wrap;
         justify-content: flex-start;
+        gap: 8px;
     }
-    
-    .command-input {
-        width: 70%;
+
+    .terminal-button {
+        min-height: 38px;
+        font-size: 0.82em;
+    }
+
+    .upload-area-terminal {
+        padding: 25px 15px;
     }
 }
+
+/* Ensure scrollbars are thinner on mobile for better readability */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+}
+
