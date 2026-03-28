@@ -47,31 +47,29 @@ function App() {
 
             addTerminalLine(`Found ${myFiles.length} owned files and ${sharedWithMe.length} shared files`, 'info');
 
-            // Hacker-style detailed output
+            // Mobile-friendly output: one property per line per file
             if (myFiles.length > 0) {
-                addTerminalLine('--- YOUR FILES -------------------------------------', 'info');
-                addTerminalLine(' SIZE       UPLOAD DATE          FILENAME', 'info');
-                addTerminalLine('----------------------------------------------------', 'info');
+                addTerminalLine('--- YOUR FILES ---', 'info');
                 myFiles.forEach(f => {
                     const sizeKB = (f.size / 1024).toFixed(1) + 'KB';
-                    const date = new Date(f.uploadedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                    addTerminalLine(` ${sizeKB.padEnd(10)} ${date.padEnd(20)} ${f.originalName}`, 'success');
+                    const date = new Date(f.uploadedAt).toLocaleString();
+                    addTerminalLine(`  ${f.originalName}`, 'success');
+                    addTerminalLine(`  Size: ${sizeKB}  |  Uploaded: ${date}`, 'info');
                 });
             }
 
             if (sharedWithMe.length > 0) {
-                addTerminalLine('--- SHARED WITH YOU --------------------------------', 'info');
-                addTerminalLine(' SIZE       OWNER        UPLOAD DATE          FILENAME', 'info');
-                addTerminalLine('----------------------------------------------------', 'info');
+                addTerminalLine('--- SHARED WITH YOU ---', 'info');
                 sharedWithMe.forEach(f => {
                     const sizeKB = (f.size / 1024).toFixed(1) + 'KB';
                     const owner = f.uploadedBy?.username || 'unknown';
-                    const date = new Date(f.uploadedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                    addTerminalLine(` ${sizeKB.padEnd(10)} ${owner.padEnd(12)} ${date.padEnd(20)} ${f.originalName}`, 'warning');
+                    const date = new Date(f.uploadedAt).toLocaleString();
+                    addTerminalLine(`  ${f.originalName}`, 'warning');
+                    addTerminalLine(`  Size: ${sizeKB}  |  Owner: ${owner}  |  Uploaded: ${date}`, 'info');
                 });
             }
             if (validData.length > 0) {
-                addTerminalLine('----------------------------------------------------', 'info');
+                addTerminalLine('----------------------', 'info');
             }
         } catch (error) {
             console.error('Error fetching files:', error);
