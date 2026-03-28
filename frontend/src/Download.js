@@ -172,20 +172,18 @@ const Download = ({ files, onFileChange, onFileAction }) => {
                                             {file.originalName}
                                         </div>
                                         <div className="file-details-terminal">
-                                            Size: {formatFileSize(file.size)} | 
-                                            Uploaded: {formatDate(file.uploadedAt)} | 
-                                            Type: {file.mimeType || 'Unknown'}
-                                        </div>
-                                        <div className="file-details-terminal">
-                                            Token Status:
-                                            <span className={`terminal-line ${tokenStatus === 'VALID' ? 'success' : tokenStatus === 'EXPIRED' ? 'error' : 'warning'}`}>
-                                                {tokenStatus.replace('_', ' ')}
-                                            </span>
-                                            {tokenStatus === 'VALID' && (
-                                                <span style={{ marginLeft: '10px', color: '#00cc00' }}>
-                                                    Expires: {getTokenExpiryTime(file._id)}
+                                            <span className="file-meta"><span className="meta-label">Size:</span> {formatFileSize(file.size)}</span>
+                                            <span className="file-meta"><span className="meta-label">Uploaded:</span> {formatDate(file.uploadedAt)}</span>
+                                            <span className="file-meta"><span className="meta-label">Type:</span> {file.mimeType || 'Unknown'}</span>
+                                            <span className="file-meta">
+                                                <span className="meta-label">Token:</span>
+                                                <span className={`token-status ${tokenStatus === 'VALID' ? 'success' : tokenStatus === 'EXPIRED' ? 'error' : 'warning'}`}>
+                                                    {tokenStatus.replace('_', ' ')}
                                                 </span>
-                                            )}
+                                                {tokenStatus === 'VALID' && (
+                                                    <span className="token-expiry"> — Expires: {getTokenExpiryTime(file._id)}</span>
+                                                )}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="file-actions-terminal">
