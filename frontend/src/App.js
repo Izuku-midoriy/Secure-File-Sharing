@@ -47,14 +47,15 @@ function App() {
 
             addTerminalLine(`Found ${myFiles.length} owned files and ${sharedWithMe.length} shared files`, 'info');
 
-            // Mobile-friendly output: one property per line per file
             if (myFiles.length > 0) {
                 addTerminalLine('--- YOUR FILES ---', 'info');
                 myFiles.forEach(f => {
                     const sizeKB = (f.size / 1024).toFixed(1) + 'KB';
-                    const date = new Date(f.uploadedAt).toLocaleString();
-                    addTerminalLine(`  ${f.originalName}`, 'success');
-                    addTerminalLine(`  Size: ${sizeKB}  |  Uploaded: ${date}`, 'info');
+                    const d = new Date(f.uploadedAt);
+                    const date = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear().toString().slice(-2)} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+                    addTerminalLine(`> ${f.originalName}`, 'success');
+                    addTerminalLine(`  Size: ${sizeKB}`, 'info');
+                    addTerminalLine(`  Date: ${date}`, 'info');
                 });
             }
 
@@ -63,13 +64,16 @@ function App() {
                 sharedWithMe.forEach(f => {
                     const sizeKB = (f.size / 1024).toFixed(1) + 'KB';
                     const owner = f.uploadedBy?.username || 'unknown';
-                    const date = new Date(f.uploadedAt).toLocaleString();
-                    addTerminalLine(`  ${f.originalName}`, 'warning');
-                    addTerminalLine(`  Size: ${sizeKB}  |  Owner: ${owner}  |  Uploaded: ${date}`, 'info');
+                    const d = new Date(f.uploadedAt);
+                    const date = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear().toString().slice(-2)} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+                    addTerminalLine(`> ${f.originalName}`, 'warning');
+                    addTerminalLine(`  Size: ${sizeKB}`, 'info');
+                    addTerminalLine(`  Owner: ${owner}`, 'info');
+                    addTerminalLine(`  Date: ${date}`, 'info');
                 });
             }
             if (validData.length > 0) {
-                addTerminalLine('----------------------', 'info');
+                addTerminalLine('---', 'info');
             }
         } catch (error) {
             console.error('Error fetching files:', error);
