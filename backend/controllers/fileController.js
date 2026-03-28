@@ -288,9 +288,10 @@ exports.createTemporaryLink = async (req, res) => {
         await file.save();
         console.log('File saved with temporary link');
 
+        const baseUrl = process.env.PUBLIC_URL || `${req.protocol}://${req.get('host')}`;
         res.json({
             message: 'Temporary link created successfully',
-            shareUrl: `${process.env.PUBLIC_URL || 'http://localhost:5000'}/api/files/temporary/${token}`,
+            shareUrl: `${baseUrl}/api/files/temporary/${token}`,
             expiresAt,
             maxDownloads: maxDownloads || 1,
             hasPassword: !!password
