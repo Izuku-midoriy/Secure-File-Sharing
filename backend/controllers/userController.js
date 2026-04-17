@@ -28,13 +28,15 @@ exports.register = async (req, res) => {
         const user = new User({
             username,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            sessionVersion: 1,
+            sessionExpiresAt: new Date(Date.now() + 15 * 60 * 1000)
         });
 
         await user.save();
 
         // Generate token
-        const token = generateToken(user._id);
+        const token = generateToken(user._id, user.sessionVersion);
 
         res.status(201).json({
             message: 'User registered successfully',
@@ -76,8 +78,19 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
+        // Check if an active session exists (strict single-session blocker)
+        if (user.sessionExpiresAt && user.sessionExpiresAt.getTime() > Date.now()) {
+            return res.status(403).json({ error: 'Account is currently active on another device.' });
+        }
+
+        // Increment session version to invalidate tokens on other devices
+        user.sessionVersion = (user.sessionVersion || 0) + 1;
+        // Set new active session expiry for 15 minutes
+        user.sessionExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+        await user.save();
+
         // Generate token
-        const token = generateToken(user._id);
+        const token = generateToken(user._id, user.sessionVersion);
 
         res.json({
             message: 'Login successful',
@@ -90,6 +103,21 @@ exports.login = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ error: 'Server error during login' });
+    }
+};
+
+// Logout user
+exports.logout = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (user) {
+            // Instantly clear the session expiration so the user or anyone can log in again immediately
+            user.sessionExpiresAt = null;
+            await user.save();
+        }
+        res.json({ message: 'Logged out successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error during logout' });
     }
 };
 

@@ -266,11 +266,12 @@ exports.createTemporaryLink = async (req, res) => {
 
         console.log('User is file owner, proceeding with link creation');
 
-        // Generate temporary link token
+        // Generate temporary link token (secret) and short link ID (public)
         const token = generateDownloadToken();
+        const linkId = crypto.randomBytes(6).toString('hex');
         const expiresAt = new Date(Date.now() + (expiresInHours || 24) * 60 * 60 * 1000);
 
-        console.log('Generated token:', token);
+        console.log('Generated token:', token, 'LinkId:', linkId);
         console.log('Expires at:', expiresAt);
 
         let processedPassword = null;
@@ -279,6 +280,7 @@ exports.createTemporaryLink = async (req, res) => {
         }
 
         file.temporaryLinks.push({
+            linkId,
             token,
             expiresAt,
             maxDownloads: maxDownloads || 1,
@@ -291,7 +293,7 @@ exports.createTemporaryLink = async (req, res) => {
         const baseUrl = process.env.PUBLIC_URL || `${req.protocol}://${req.get('host')}`;
         res.json({
             message: 'Temporary link created successfully',
-            shareUrl: `${baseUrl}/api/files/temporary/${token}`,
+            shareUrl: `${baseUrl}/api/files/temporary/${linkId}`,
             expiresAt,
             maxDownloads: maxDownloads || 1,
             hasPassword: !!password
@@ -309,9 +311,12 @@ exports.downloadByTemporaryLink = async (req, res) => {
         const { token } = req.params;
         const password = req.body.password || req.query.password;
 
-        // Find file with valid temporary link
+        // Find file with valid temporary link (by linkId or fallback to legacy token)
         const file = await File.findOne({
-            'temporaryLinks.token': token,
+            $or: [
+                { 'temporaryLinks.linkId': token },
+                { 'temporaryLinks.token': token }
+            ],
             'temporaryLinks.expiresAt': { $gt: new Date() }
         });
 
@@ -320,7 +325,7 @@ exports.downloadByTemporaryLink = async (req, res) => {
         }
 
         // Find the specific temporary link
-        const tempLink = file.temporaryLinks.find(link => link.token === token);
+        const tempLink = file.temporaryLinks.find(link => link.linkId === token || link.token === token);
 
         // Check download limit
         if (tempLink.downloadCount >= tempLink.maxDownloads) {

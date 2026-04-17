@@ -36,7 +36,13 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            // Attempt to free the backend session lock to allow immediate login elsewhere
+            await apiFetch('/users/logout', { method: 'POST' });
+        } catch (err) {
+            console.error('Error during backend logout:', err);
+        }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setUser(null);

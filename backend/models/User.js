@@ -34,6 +34,14 @@ const userSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    sessionVersion: {
+        type: Number,
+        default: 0
+    },
+    sessionExpiresAt: {
+        type: Date,
+        default: null
     }
 });
 

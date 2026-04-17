@@ -14,4 +14,7 @@ router.post('/login', strictLimiter, userController.login);
 // Get user profile (requires authentication)
 router.get('/profile', authenticateToken, userController.getProfile);
 
+// Logout user (requires authentication)
+router.post('/logout', authenticateToken, userController.logout);
+
 module.exports = router;

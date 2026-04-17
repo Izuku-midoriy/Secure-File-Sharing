@@ -56,6 +56,9 @@ const fileSchema = new Schema({
         }
     }],
     temporaryLinks: [{
+        linkId: {
+            type: String
+        },
         token: {
             type: String,
             required: true
