@@ -35,6 +35,10 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/secure-fi
     .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
+app.get('/', (req, res) => {
+    res.json({ message: "Secure File Share Backend API is running 🚀" });
+});
+
 app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
 
